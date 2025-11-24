@@ -1,0 +1,316 @@
+openapi: 3.0.3
+info:
+  title: Distributed Query Processing API
+  version: "1.0.0"
+  description: |
+    API REST do MVP inspirado no Google Dremel. Permite carregar dados,
+    submeter queries SQL, consultar status e visualizar a árvore física
+    de execução, além de registrar workers remotos.
+servers:
+  - url: http://localhost:8080
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: Servidor online
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /query:
+    post:
+      summary: Submete uma query SQL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryRequest'
+      responses:
+        "202":
+          description: Query aceita para execução
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryAccepted'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+  /query/{id}:
+    get:
+      summary: Consulta status e resultados parciais
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Status encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryStatusResponse'
+        "404":
+          $ref: '#/components/responses/NotFound'
+  /query/{id}/tree:
+    get:
+      summary: Visualiza a árvore física
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: format
+          schema:
+            type: string
+            enum: [json, dot]
+            default: json
+      responses:
+        "200":
+          description: Árvore em JSON (default) ou DOT
+          content:
+            application/json:
+              schema:
+                type: object
+            text/plain:
+              schema:
+                type: string
+        "404":
+          $ref: '#/components/responses/NotFound'
+  /data/load:
+    post:
+      summary: Carrega dados em formato JSON
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataLoadRequest'
+      responses:
+        "201":
+          description: Partição criada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataLoadResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+  /workers/register:
+    post:
+      summary: Registra um worker remoto
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkerRegisterRequest'
+      responses:
+        "201":
+          description: Worker registrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkerRegisterResponse'
+        "409":
+          $ref: '#/components/responses/Conflict'
+  /workers/{id}/poll:
+    post:
+      summary: Worker solicita o próximo task (long-poll)
+      parameters:
+        - $ref: '#/components/parameters/WorkerID'
+      responses:
+        "200":
+          description: Task disponível
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskEnvelope'
+        "204":
+          description: Nenhum task disponível
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+  /workers/{id}/result:
+    post:
+      summary: Worker envia o resultado do task
+      parameters:
+        - $ref: '#/components/parameters/WorkerID'
+      responses:
+        "200":
+          description: Resultado aceito
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+  /workers/{id}/heartbeat:
+    post:
+      summary: Atualiza heartbeat do worker
+      parameters:
+        - $ref: '#/components/parameters/WorkerID'
+      responses:
+        "200":
+          description: Worker ativo
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+components:
+  parameters:
+    WorkerID:
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+  responses:
+    BadRequest:
+      description: Requisição inválida
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Recurso não encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Conflict:
+      description: Recurso em conflito
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Falha de autenticação do worker
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: ok
+    QueryRequest:
+      type: object
+      required: [sql]
+      properties:
+        sql:
+          type: string
+          example: SELECT user_id, COUNT(*) FROM events GROUP BY user_id
+    QueryAccepted:
+      type: object
+      properties:
+        id:
+          type: string
+          example: q-0001
+        status:
+          type: string
+        plan_root:
+          type: string
+    QueryStatusResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum: [PENDING, RUNNING, SUCCESS, FAILED]
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskResult'
+        rows:
+          type: array
+          description: Linhas retornadas pelo runner local (limitadas na memória).
+          items:
+            type: object
+            additionalProperties: true
+        result_error:
+          type: string
+          description: Erro ao materializar o resultado final, caso exista.
+    TaskResult:
+      type: object
+      properties:
+        taskId:
+          type: string
+        workerId:
+          type: string
+        rows:
+          type: integer
+        duration:
+          type: string
+          description: Duração em nanossegundos (formato Go)
+        error:
+          type: string
+    DataLoadRequest:
+      type: object
+      required: [table, rows]
+      properties:
+        table:
+          type: string
+        partition_id:
+          type: string
+        schema:
+          type: object
+          properties:
+            columns:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  type:
+                    type: string
+        rows:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+    DataLoadResponse:
+      type: object
+      properties:
+        table:
+          type: string
+        partition_id:
+          type: string
+        status:
+          type: string
+    WorkerRegisterRequest:
+      type: object
+      properties:
+        id:
+          type: string
+    WorkerRegisterResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        secret:
+          type: string
+        poll:
+          type: string
+        result:
+          type: string
+        heartbeat:
+          type: string
+    TaskEnvelope:
+      type: object
+      properties:
+        task:
+          type: object
+          properties:
+            queryId:
+              type: string
+            taskId:
+              type: string
+            fragment:
+              type: object
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
