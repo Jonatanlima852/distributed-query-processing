@@ -1,0 +1,89 @@
+{
+  "tables": {
+    "events": {
+      "name": "events",
+      "schema": {
+        "name": "events",
+        "columns": [
+          {
+            "name": "user_id",
+            "type": 0
+          },
+          {
+            "name": "event_type",
+            "type": 1
+          },
+          {
+            "name": "ts",
+            "type": 1
+          },
+          {
+            "name": "value",
+            "type": 2
+          }
+        ]
+      },
+      "partitions": {
+        "part-1763311720726243600": {
+          "id": "part-1763311720726243600",
+          "filePath": "events\\part-1763311720726243600.gob",
+          "rowCount": 5000,
+          "stats": {
+            "event_type": {
+              "count": 5000,
+              "nullCount": 0,
+              "min": {
+                "type": 1,
+                "string": "event_0"
+              },
+              "max": {
+                "type": 1,
+                "string": "event_4"
+              }
+            },
+            "ts": {
+              "count": 5000,
+              "nullCount": 0,
+              "min": {
+                "type": 1,
+                "string": "2025-11-16T13:48:40-03:00"
+              },
+              "max": {
+                "type": 1,
+                "string": "2025-11-16T15:11:59-03:00"
+              }
+            },
+            "user_id": {
+              "count": 5000,
+              "nullCount": 0,
+              "min": {
+                "type": 0,
+                "int": 0
+              },
+              "max": {
+                "type": 0,
+                "int": 999
+              }
+            },
+            "value": {
+              "count": 5000,
+              "nullCount": 0,
+              "min": {
+                "type": 2,
+                "float": 0.004251924802471142
+              },
+              "max": {
+                "type": 2,
+                "float": 99.96459357523757
+              }
+            }
+          },
+          "createdAt": "2025-11-16T16:48:40.7299052Z",
+          "updatedAt": "2025-11-16T16:48:40.7299052Z"
+        }
+      },
+      "createdAt": "2025-11-16T16:48:40.7038373Z",
+      "updatedAt": "2025-11-16T16:48:40.7299052Z"
+    }
+  }
+}
