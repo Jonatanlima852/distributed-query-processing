@@ -1,0 +1,29 @@
+@startuml QueryPipeline
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Dynamic.puml
+
+title Pipeline físico - SELECT user_id, event_type FROM events WHERE value > 50 ORDER BY ts DESC LIMIT 100
+
+LAYOUT_LEFT_RIGHT()
+
+Person(client, "Cliente")
+Container(coordinator, "Coordinator", "Go", "Planeja a query")
+Container(worker, "Worker (embutido ou externo)", "Go", "Executa operadores físicos")
+ContainerDb(storage, "Storage Local", "Arquivos Gob", "Contém partições events/*")
+
+Rel(client, coordinator, "Envia SQL")
+Rel(coordinator, worker, "Despacha task")
+Rel(worker, storage, "Lê partições para SCAN")
+
+note right of worker
+Pipeline (sequencial):
+1. SCAN(events: user_id, event_type, ts, value)
+2. FILTER(value > 50)
+3. PROJECT(user_id, event_type)
+4. SORT(ts DESC)
+5. LIMIT 100
+end note
+
+Rel(worker, coordinator, "Retorna linhas ordenadas")
+Rel(coordinator, client, "Entrega resultado")
+@enduml
+

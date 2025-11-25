@@ -1,0 +1,24 @@
+@startuml C4SystemOverview
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+LAYOUT_WITH_LEGEND()
+
+Person(client, "Cliente", "CLI, Swagger ou qualquer HTTP client que submete queries e carrega dados.")
+System_Boundary(mvp, "MVP Dremel-like") {
+  System(coordinator, "Coordinator", "Go (cmd/coordinator)", "Recebe queries/data load, planeja execução e coordena workers.")
+  SystemDb(storage, "Storage Local", "Arquivos .gob + catalog.json", "Partições colunares produzidas pelo CLI.")
+  System(embeddedWorker, "Embedded Worker", "Go (internal/runtime)", "Worker interno instanciado pelo coordinator.")
+  System(optionalWorker, "Worker Externo", "Go (cmd/worker)", "Processa tasks recebidos via HTTP long poll.")
+}
+
+Rel(client, coordinator, "POST /query, /data/load, /workers/*")
+Rel(coordinator, embeddedWorker, "Despacha tasks internos")
+Rel(coordinator, optionalWorker, "Distribui tasks\n(/workers/{id}/poll)", "HTTP")
+BiRel(embeddedWorker, storage, "Scan/Filter/Project sobre partições")
+BiRel(optionalWorker, storage, "Scan/Filter/Project sobre partições")
+Rel(optionalWorker, coordinator, "POST /workers/{id}/result", "Parciais/erros")
+Rel(coordinator, client, "Status/resultados finais")
+
+SHOW_LEGEND()
+@enduml
+

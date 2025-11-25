@@ -1,0 +1,28 @@
+@startuml ArchitectureContainers
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_WITH_LEGEND()
+
+Person(client, "Cliente", "CLI, Swagger ou qualquer HTTP client")
+
+System_Boundary(mvp, "MVP Distributed Query Processing") {
+    Container(cli, "CLI", "Go (cmd/cli)", "Gera dados sintéticos e popula partições")
+    Container(api, "Coordinator API", "Go (cmd/coordinator)", "Exposta em :8080, recebe queries e tasks de dados")
+    ContainerDb(storage, "Storage Local", "Arquivos Gob + catalog.json", "Partições colunares")
+    Container(embeddedWorker, "Embedded Worker", "Go (internal/runtime)", "Worker interno criado pelo coordinator")
+    Container(worker, "Worker Externo", "Go (cmd/worker)", "Processa tasks via HTTP long poll")
+}
+
+Rel(client, api, "POST /query, /data/load, /workers/*")
+Rel(cli, api, "Gera dados e chama /data/load")
+BiRel(api, storage, "Atualiza catálogo / lê metadados")
+Rel(api, embeddedWorker, "Despacha tasks internos")
+Rel(api, worker, "Distribui tasks (poll)", "HTTP")
+BiRel(embeddedWorker, storage, "Leituras SCAN, escreve resultados parciais")
+BiRel(worker, storage, "Leituras SCAN, escreve resultados parciais")
+Rel(worker, api, "POST /workers/{id}/result")
+Rel(api, client, "Retorna status/rows")
+
+SHOW_LEGEND()
+@enduml
+

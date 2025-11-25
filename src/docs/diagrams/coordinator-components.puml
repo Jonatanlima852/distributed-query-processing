@@ -1,0 +1,28 @@
+@startuml CoordinatorComponents
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+Container_Boundary(coordinator, "Coordinator (cmd/coordinator + internal/*)") {
+    Component(api, "API Layer", "internal/api", "Handlers REST / swagger")
+    Component(parser, "Parser", "internal/parser", "Converte SQL -> AST (usa sqlparser)")
+    Component(planner, "Planner", "internal/planner", "AST -> plano físico (tree de operadores)")
+    Component(executor, "Executor", "internal/executor", "Operadores físicos (Scan, Filter, Sort, Limit, Aggregate)")
+    Component(distributed, "Distributed Runtime", "internal/distributed", "Coordena workers, tasks e resultados")
+    Component(runtime, "Runner", "internal/runtime/runner", "Executa plano local, integra operadores")
+    Component(storage, "Storage Engine", "internal/storage + pkg/columnar", "Lê/serializa partições colunares")
+    Component(visualizer, "Visualizer", "internal/visualizer", "Gera árvore física em JSON/DOT")
+}
+
+Rel(api, parser, "parse SQL")
+Rel(parser, planner, "AST")
+Rel(planner, distributed, "Plano físico distribuído")
+Rel(distributed, runtime, "Tasks para executar sub-planos")
+Rel(runtime, executor, "Invoca operadores físicos")
+Rel(executor, storage, "SCAN/WRITE partições localmente")
+Rel(runtime, visualizer, "Exporta tree", "JSON/DOT")
+Rel(distributed, api, "Status/resultados agregados")
+
+SHOW_LEGEND()
+@enduml
+
