@@ -199,7 +199,7 @@ components:
       properties:
         sql:
           type: string
-          example: SELECT user_id, COUNT(*) FROM events GROUP BY user_id
+          example: SELECT user_id, event_type FROM events WHERE value > 50 ORDER BY ts DESC LIMIT 100
     QueryAccepted:
       type: object
       properties:
