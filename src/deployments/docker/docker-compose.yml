@@ -8,7 +8,8 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - data:/data
+      # Monta o diretório de dados gerado no host (src/data) dentro do container
+      - ../../data:/data
     command: ["--data-dir=/data"]
 
   worker1:
@@ -18,7 +19,8 @@ services:
     depends_on:
       - coordinator
     volumes:
-      - data:/data
+      # Compartilha o mesmo diretório de dados do coordinator
+      - ../../data:/data
     command: ["--id=worker-1", "--coordinator=http://coordinator:8080", "--data-dir=/data"]
 
   worker2:
@@ -28,8 +30,6 @@ services:
     depends_on:
       - coordinator
     volumes:
-      - data:/data
+      # Compartilha o mesmo diretório de dados do coordinator
+      - ../../data:/data
     command: ["--id=worker-2", "--coordinator=http://coordinator:8080", "--data-dir=/data"]
-
-volumes:
-  data:

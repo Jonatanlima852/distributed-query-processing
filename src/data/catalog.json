@@ -80,10 +80,181 @@
           },
           "createdAt": "2025-11-16T16:48:40.7299052Z",
           "updatedAt": "2025-11-16T16:48:40.7299052Z"
+        },
+        "part-1764066392107406900": {
+          "id": "part-1764066392107406900",
+          "filePath": "events\\part-1764066392107406900.gob",
+          "rowCount": 5000,
+          "stats": {
+            "event_type": {
+              "count": 5000,
+              "nullCount": 0,
+              "min": {
+                "type": 1,
+                "string": "event_0"
+              },
+              "max": {
+                "type": 1,
+                "string": "event_4"
+              }
+            },
+            "ts": {
+              "count": 5000,
+              "nullCount": 0,
+              "min": {
+                "type": 1,
+                "string": "2025-11-25T07:26:32-03:00"
+              },
+              "max": {
+                "type": 1,
+                "string": "2025-11-25T08:49:51-03:00"
+              }
+            },
+            "user_id": {
+              "count": 5000,
+              "nullCount": 0,
+              "min": {
+                "type": 0,
+                "int": 0
+              },
+              "max": {
+                "type": 0,
+                "int": 999
+              }
+            },
+            "value": {
+              "count": 5000,
+              "nullCount": 0,
+              "min": {
+                "type": 2,
+                "float": 0.0018258057297155356
+              },
+              "max": {
+                "type": 2,
+                "float": 99.9629230196449
+              }
+            }
+          },
+          "createdAt": "2025-11-25T10:26:32.1114495Z",
+          "updatedAt": "2025-11-25T10:26:32.1114495Z"
+        },
+        "part-1764070872505122200": {
+          "id": "part-1764070872505122200",
+          "filePath": "events\\part-1764070872505122200.gob",
+          "rowCount": 5000,
+          "stats": {
+            "event_type": {
+              "count": 5000,
+              "nullCount": 0,
+              "min": {
+                "type": 1,
+                "string": "event_0"
+              },
+              "max": {
+                "type": 1,
+                "string": "event_4"
+              }
+            },
+            "ts": {
+              "count": 5000,
+              "nullCount": 0,
+              "min": {
+                "type": 1,
+                "string": "2025-11-25T08:41:12-03:00"
+              },
+              "max": {
+                "type": 1,
+                "string": "2025-11-25T10:04:31-03:00"
+              }
+            },
+            "user_id": {
+              "count": 5000,
+              "nullCount": 0,
+              "min": {
+                "type": 0,
+                "int": 0
+              },
+              "max": {
+                "type": 0,
+                "int": 999
+              }
+            },
+            "value": {
+              "count": 5000,
+              "nullCount": 0,
+              "min": {
+                "type": 2,
+                "float": 0.01011810628978306
+              },
+              "max": {
+                "type": 2,
+                "float": 99.99933011989637
+              }
+            }
+          },
+          "createdAt": "2025-11-25T11:41:12.5094045Z",
+          "updatedAt": "2025-11-25T11:41:12.5094045Z"
+        },
+        "part-1764071312558982900": {
+          "id": "part-1764071312558982900",
+          "filePath": "events\\part-1764071312558982900.gob",
+          "rowCount": 5000,
+          "stats": {
+            "event_type": {
+              "count": 5000,
+              "nullCount": 0,
+              "min": {
+                "type": 1,
+                "string": "event_0"
+              },
+              "max": {
+                "type": 1,
+                "string": "event_4"
+              }
+            },
+            "ts": {
+              "count": 5000,
+              "nullCount": 0,
+              "min": {
+                "type": 1,
+                "string": "2025-11-25T08:48:32-03:00"
+              },
+              "max": {
+                "type": 1,
+                "string": "2025-11-25T10:11:51-03:00"
+              }
+            },
+            "user_id": {
+              "count": 5000,
+              "nullCount": 0,
+              "min": {
+                "type": 0,
+                "int": 0
+              },
+              "max": {
+                "type": 0,
+                "int": 999
+              }
+            },
+            "value": {
+              "count": 5000,
+              "nullCount": 0,
+              "min": {
+                "type": 2,
+                "float": 0.0878029365801728
+              },
+              "max": {
+                "type": 2,
+                "float": 99.98540369090657
+              }
+            }
+          },
+          "createdAt": "2025-11-25T11:48:32.562981Z",
+          "updatedAt": "2025-11-25T11:48:32.562981Z"
         }
       },
       "createdAt": "2025-11-16T16:48:40.7038373Z",
-      "updatedAt": "2025-11-16T16:48:40.7299052Z"
+      "updatedAt": "2025-11-25T11:48:32.562981Z"
     }
   }
 }

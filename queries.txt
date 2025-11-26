@@ -1,0 +1,5 @@
+SELECT * FROM events WHERE user_id = 42 LIMIT 20
+SELECT user_id, event_type FROM events WHERE value > 50 ORDER BY ts DESC LIMIT 100
+SELECT event_type FROM events WHERE ts BETWEEN '2025-11-25T08:00:00-03:00' AND '2025-11-25T08:30:00-03:00' LIMIT 200
+SELECT user_id, value FROM events WHERE value BETWEEN 10 AND 20 ORDER BY value ASC LIMIT 50
+SELECT user_id FROM events WHERE event_type = 'event_3' ORDER BY ts DESC LIMIT 150
